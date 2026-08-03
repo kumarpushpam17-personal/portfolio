@@ -37,7 +37,7 @@
   "sameAs": [
     "https://www.linkedin.com/in/pushpam-kumar-7594a024a/"
   ],
-  "knowsAbout": ["Python", "Django", "FastAPI", "PostgreSQL", "Redis", "Celery", "Elasticsearch", "AWS", "Docker", "LLMs", "RAG", "Spring Boot"]
+  "knowsAbout": ["Python", "Django", "FastAPI", "PostgreSQL", "Redis", "Celery", "Elasticsearch", "AWS", "Docker", "LLMs", "RAG", "Spring Boot", "Reinforcement Learning", "LLM Fine-Tuning"]
 }
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -813,12 +813,6 @@ section + section {
 }
 
 /* ——— Projects ——— */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 1.5rem;
-}
-
 .project-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1098,6 +1092,7 @@ section + section {
 }
 .hackathon-rank {
   display: inline-block;
+  white-space: nowrap;
   font-size: 0.7rem;
   font-family: var(--font-mono);
   font-weight: 600;
@@ -1253,32 +1248,6 @@ section + section {
   box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
-/* Hidden project + See More button */
-.project-hidden {
-  display: none !important;
-}
-
-.see-more-btn {
-  display: block;
-  margin: 2rem auto 0;
-  padding: 0.8rem 2rem;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--accent);
-  background: transparent;
-  border: 1px solid var(--accent-dim);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.see-more-btn:hover {
-  background: var(--accent);
-  color: var(--bg);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
-
 /* Phone number censored effect */
 .phone-censored {
   pointer-events: none !important;
@@ -1346,6 +1315,151 @@ footer p {
   color: var(--text-muted);
 }
 
+/* ——— Auto-scrolling carousel (projects + hackathons) ——— */
+/* Position is driven by JS scrollLeft, so the auto-scroll, the arrows,
+   trackpad swipes and touch drags all move the same thing. */
+.carousel-shell { position: relative; }
+
+.carousel {
+  --carousel-gap: 1.5rem;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding: 0.75rem 0 2rem;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 3%, #000 97%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 3%, #000 97%, transparent 100%);
+}
+
+.carousel::-webkit-scrollbar { display: none; }
+
+.carousel-track {
+  display: flex;
+  align-items: stretch;
+  gap: var(--carousel-gap);
+  width: max-content;
+}
+
+/* ——— Prev / next controls ——— */
+.carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: -0.75rem;
+}
+
+.carousel-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.carousel-nav {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  transition: color 0.3s, border-color 0.3s, background 0.3s, transform 0.3s;
+}
+
+.carousel-nav:hover {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.carousel-nav:active { transform: translateY(0); }
+
+.carousel-nav:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* uniform card footprint — every card same width, same height */
+.carousel .project-card,
+.carousel .hackathon-card {
+  flex: 0 0 380px;
+  display: flex;
+  flex-direction: column;
+}
+
+.carousel .hackathon-card { flex-basis: 360px; }
+
+/* pin the footer to the bottom so tags and proof links line up across cards */
+.carousel .project-card .project-tags,
+.carousel .hackathon-card .hackathon-footer { margin-top: auto; }
+
+/* the card is a flex column — keep the result pill at its natural width */
+.hackathon-rank { align-self: flex-start; }
+
+/* reserve two lines for the title so every result pill sits on the same row */
+.carousel .hackathon-card .hackathon-name {
+  line-height: 1.35;
+  min-height: 2.7em;
+}
+
+.carousel-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.carousel-hint::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+
+/* Reduced motion: no auto-scroll (handled in JS) — arrows and swipe still work. */
+@media (prefers-reduced-motion: reduce) {
+  .carousel {
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  .carousel-nav { transition: none; }
+}
+
+/* ——— Hackathon card footer ——— */
+.hackathon-year {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.hackathon-footer { padding-top: 1.25rem; }
+
+.mono-inline {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  color: var(--text);
+}
+
+.hackathon-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-left: -0.8rem;
+}
+
+.hackathon-footer .linkedin-proof { margin-top: 0.75rem; }
+
 /* ——— Staggered reveal ——— */
 .reveal {
   opacity: 0;
@@ -1398,12 +1512,14 @@ footer p {
   }
   .about-grid { grid-template-columns: 1fr; gap: 2rem; }
   .extras-grid { grid-template-columns: 1fr; }
-  .projects-grid { grid-template-columns: 1fr; }
   .edu-grid { grid-template-columns: 1fr; }
   .hackathon-grid { grid-template-columns: 1fr; }
   .timeline { padding-left: 2rem; }
   section { padding: 2.5rem 0; }
   .marquee-item { font-size: 0.7rem; padding: 0 1.5rem; }
+  .carousel { --carousel-gap: 1rem; }
+  .carousel .project-card,
+  .carousel .hackathon-card { flex-basis: min(86vw, 340px); padding: 1.5rem; }
 }
 </style>
 </head>
@@ -1530,11 +1646,11 @@ footer p {
           <div class="stat-label">Years Experience</div>
         </div>
         <div class="stat-card reveal reveal-delay-2">
-          <div class="stat-number"><span class="counter" data-target="6">0</span><span class="stat-suffix">+</span></div>
+          <div class="stat-number"><span class="counter" data-target="7">0</span><span class="stat-suffix">+</span></div>
           <div class="stat-label">Projects Delivered</div>
         </div>
         <div class="stat-card reveal reveal-delay-3">
-          <div class="stat-number"><span class="counter" data-target="3">0</span></div>
+          <div class="stat-number"><span class="counter" data-target="4">0</span></div>
           <div class="stat-label">Hackathons</div>
         </div>
         <div class="stat-card reveal reveal-delay-4">
@@ -1617,9 +1733,11 @@ footer p {
     <h2 class="section-title reveal">Projects I've contributed to</h2>
     <p class="section-subtitle reveal">Products I've helped build and scale alongside talented teams.</p>
 
-    <div class="projects-grid">
+    <div class="carousel-shell reveal">
+      <div class="carousel" id="projectsCarousel">
+      <div class="carousel-track">
 
-      <div class="project-card reveal reveal-delay-1">
+      <div class="project-card">
         <div class="project-header">
           <div class="project-icon" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);border:none;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M12 2a4 4 0 014 4c0 1.1-.9 2-2 2h-4a2 2 0 01-2-2 4 4 0 014-4z"/><path d="M8 8v2a4 4 0 008 0V8"/><path d="M5 12h14"/><path d="M7 12v4a5 5 0 0010 0v-4"/><circle cx="9" cy="16" r="1"/><circle cx="15" cy="16" r="1"/></svg>
@@ -1632,11 +1750,9 @@ footer p {
         <div class="project-subtitle">Network Discovery & Data Monitoring Platform</div>
         <div class="project-period">Nov 2025 – Present</div>
         <ul class="project-bullets">
-          <li>Built network discovery platform with FastAPI, PostgreSQL, and async Python</li>
+          <li>Built a network discovery and PII scanning platform with FastAPI, PostgreSQL, and async Python</li>
           <li>Designed RESTful APIs for scan management, real-time execution, progress tracking, and paginated results</li>
-          <li>Integrated normalized SQLAlchemy schema into enterprise job system with concurrent scans and audit logging</li>
-          <li>Optimized RAM via chunked parsing for large files (>200 MB), reducing PII scanning overhead</li>
-          <li>Introduced Simple, Deep & Deep Embedded JSON parsing modes for PII detection on FS, ADLS, and S3</li>
+          <li>Optimized RAM via chunked parsing for files &gt;200 MB, with Simple, Deep &amp; Deep Embedded JSON modes for PII detection on FS, ADLS, and S3</li>
         </ul>
         <div class="project-tags">
           <span class="tag">FastAPI</span>
@@ -1647,7 +1763,7 @@ footer p {
         </div>
       </div>
 
-      <div class="project-card reveal reveal-delay-2">
+      <div class="project-card">
         <div class="project-header">
           <div class="project-icon" style="background:linear-gradient(135deg,#10b981,#059669);border:none;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M12 2v4M6.34 6.34l2.83 2.83M2 12h4m-.34 5.66l2.83-2.83M12 18v4m3.66-3.17l2.83 2.83M18 12h4m-3.17-5.66l-2.83 2.83"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1660,12 +1776,9 @@ footer p {
         <div class="project-subtitle">Mutual Fund Investment & Savings Platform</div>
         <div class="project-period">Jul 2023 – Apr 2025</div>
         <ul class="project-bullets">
-          <li>Built and maintained backend services for SIP, one-time investments</li>
-          <li>Optimized transaction workflows using Celery task queues and database tuning</li>
-          <li>Led complete MFU integration from user onboarding to SIP transactions and cancellations</li>
-          <li>Handled payment integrations across UPI, Debit Card, NEFT, Net Banking, and Bank Mandate</li>
-          <li>Worked on portfolio analytics APIs including sector exposure, fund segmentation, and return tracking</li>
-          <li>Ensured SEBI-compliant KYC verification and secure transaction flows</li>
+          <li>Built and maintained backend services for SIP and one-time investments, tuning transaction workflows with Celery task queues</li>
+          <li>Led complete MFU integration from user onboarding to SIP transactions, plus portfolio analytics APIs for sector exposure and return tracking</li>
+          <li>Handled payments across UPI, Debit Card, NEFT, Net Banking, and Bank Mandate with SEBI-compliant KYC verification</li>
         </ul>
         <div class="project-tags">
           <span class="tag">Django</span>
@@ -1676,7 +1789,7 @@ footer p {
         </div>
       </div>
 
-      <div class="project-card reveal reveal-delay-3">
+      <div class="project-card">
         <div class="project-header">
           <div class="project-icon" style="background:linear-gradient(135deg,#f5c842,#d4a017);border:none;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4.5a2 2 0 010 4H10m0 0h5"/></svg>
@@ -1690,10 +1803,8 @@ footer p {
         <div class="project-period">Jan 2024 – Apr 2025</div>
         <ul class="project-bullets">
           <li>Developed backend APIs for gold buying, selling, SIPs, leasing, and redemption workflows</li>
-          <li>Built APIs for recurring daily/weekly/monthly savings with live gold pricing via Augmont integration</li>
-          <li>Implemented reward system APIs including referral rewards, streak-based gold rewards, and scratch cards</li>
-          <li>Created admin dashboard using Retool with supporting APIs for OPS and Admin operations</li>
-          <li>Handled secure payment and withdrawal flows with KYC verification</li>
+          <li>Built recurring daily/weekly/monthly savings with live gold pricing via Augmont, plus referral, streak, and scratch-card reward APIs</li>
+          <li>Created a Retool admin dashboard for OPS and handled secure payment and withdrawal flows with KYC verification</li>
         </ul>
         <div class="project-tags">
           <span class="tag">Django</span>
@@ -1704,7 +1815,7 @@ footer p {
         </div>
       </div>
 
-      <div class="project-card reveal reveal-delay-1">
+      <div class="project-card">
         <div class="project-header">
           <div class="project-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7);border:none;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
@@ -1729,7 +1840,7 @@ footer p {
         </div>
       </div>
 
-      <div class="project-card reveal reveal-delay-2">
+      <div class="project-card">
         <div class="project-header">
           <div class="project-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5);border:none;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>
@@ -1753,7 +1864,34 @@ footer p {
         </div>
       </div>
 
-      <div class="project-card reveal reveal-delay-3">
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-icon" style="background:linear-gradient(135deg,#ef4444,#b91c1c);border:none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M12 3l7 3.5v5c0 4-3 7.5-7 8.5-4-1-7-4.5-7-8.5v-5L12 3z"/><path d="M9.5 12l1.8 1.8 3.5-3.6"/></svg>
+          </div>
+          <div class="project-links" style="display:flex;gap:0.85rem;">
+            <a href="https://huggingface.co/spaces/pushpam14/api-contract-validator" target="_blank" rel="noopener">Live Env ↗</a>
+            <a href="https://github.com/kumarpushpam17-personal/Hackathon/blob/main/api_contract_validator/BLOG.md" target="_blank" rel="noopener">Writeup ↗</a>
+          </div>
+        </div>
+        <div class="project-name">Enterprise Contract Guardian</div>
+        <div class="project-subtitle">OpenEnv RL Environment for API Blast-Radius Reasoning</div>
+        <div class="project-period">Apr 2026 · Meta PyTorch OpenEnv Hackathon × Scaler</div>
+        <ul class="project-bullets">
+          <li>Built a hosted OpenEnv environment that trains LLM agents to detect API contract violations, trace which downstream services break, and propose backward-compatible fixes</li>
+          <li>Modelled partially observable service graphs with hidden ground truth across 9 tasks and a 14-signal reward rubric</li>
+          <li>GRPO-trained Qwen2.5-7B + LoRA lifted <span class="mono-inline">detect_breaking_changes</span> from 0.01 &rarr; 0.67, where the untrained 72B also scored 0.01</li>
+        </ul>
+        <div class="project-tags">
+          <span class="tag">OpenEnv</span>
+          <span class="tag">GRPO</span>
+          <span class="tag">TRL</span>
+          <span class="tag">LoRA</span>
+          <span class="tag">Hugging Face</span>
+        </div>
+      </div>
+
+      <div class="project-card">
         <div class="project-header">
           <div class="project-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706);border:none;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="6" y="7" width="12" height="10" rx="1"/><path d="M10 7V5a2 2 0 014 0v2M8 17v2M16 17v2"/><path d="M10 11h4m-2-2v4"/></svg>
@@ -1777,7 +1915,7 @@ footer p {
         </div>
       </div>
 
-      <div class="project-card reveal reveal-delay-1 project-hidden" id="hiddenProject">
+      <div class="project-card">
         <div class="project-header">
           <div class="project-icon" style="background:linear-gradient(135deg,#ec4899,#db2777);border:none;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
@@ -1799,8 +1937,16 @@ footer p {
         </div>
       </div>
 
+      </div>
+      </div>
+      <div class="carousel-controls">
+        <p class="carousel-hint">Auto-scrolling &middot; hover to pause &middot; arrows or swipe to step</p>
+        <div class="carousel-buttons">
+        <button class="carousel-nav prev" type="button" aria-label="Previous projects"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="carousel-nav next" type="button" aria-label="Next projects"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+      </div>
     </div>
-    <button class="see-more-btn" id="seeMoreBtn" onclick="toggleHiddenProjects()">See More</button>
   </div>
 </section>
 
@@ -1834,6 +1980,8 @@ footer p {
           <span class="skill-item">Large Language Models</span>
           <span class="skill-item">RAG</span>
           <span class="skill-item">Vector Databases</span>
+          <span class="skill-item">RL Fine-Tuning (GRPO / LoRA)</span>
+          <span class="skill-item">Hugging Face</span>
         </div>
       </div>
       <div class="skill-category reveal reveal-delay-1">
@@ -1938,41 +2086,110 @@ footer p {
     <h2 class="section-title reveal">Building under pressure</h2>
     <p class="section-subtitle reveal">Hackathons that pushed creativity and speed to the limit.</p>
 
-    <div class="hackathon-grid">
-      <div class="hackathon-card reveal reveal-delay-1">
-        <div class="hackathon-name">AI Companion</div>
-        <div class="hackathon-rank">🥇 Rank 1 · Winner</div>
-        <ul>
-          <li>Developed an intelligent assistant that listens to team conversations (Slack/Teams/Gmail)</li>
-          <li>Extracted actionable tasks and allowed follow-up via chatbot</li>
-          <li>Implemented AI/NLP-based task extraction and conversational interface</li>
-        </ul>
-        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7308720340656930816/" target="_blank" rel="noopener" class="linkedin-proof">
-          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          View on LinkedIn ↗
-        </a>
+    <div class="carousel-shell reveal">
+      <div class="carousel" id="hackathonCarousel">
+      <div class="carousel-track">
+
+        <div class="hackathon-card" style="border-left: 3px solid var(--accent);">
+          <div class="hackathon-name">Meta PyTorch OpenEnv Hackathon &times; Scaler <span class="hackathon-year">Apr 2026</span></div>
+          <div class="hackathon-rank">&#127941; Grand Finalist</div>
+          <ul>
+            <li>Cleared Round 1 out of 52,000+ registered developers and reached the on-campus Grand Finale in Bangalore, presenting to Meta engineers</li>
+            <li>Built <strong>Enterprise Contract Guardian</strong> &mdash; an OpenEnv RL environment that trains LLM agents to reason about API contract blast radius</li>
+            <li>GRPO-trained Qwen2.5-7B + LoRA lifted <span class="mono-inline">detect_breaking_changes</span> from 0.01 &rarr; 0.67, where the untrained 72B also scored 0.01</li>
+          </ul>
+          <div class="hackathon-footer">
+            <div class="project-tags">
+              <span class="tag">OpenEnv</span>
+              <span class="tag">GRPO</span>
+              <span class="tag">LoRA</span>
+              <span class="tag">Hugging Face</span>
+            </div>
+            <div class="hackathon-links">
+              <a href="https://drive.google.com/file/d/1yfPq-volkezGACc3ZBJa_GgGDBZiumUp/view?usp=drive_link" target="_blank" rel="noopener" class="linkedin-proof">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14.5L7 22l5-2.5L17 22l-1.5-7.5"/></svg>
+                Certificate &#8599;
+              </a>
+              <a href="https://github.com/kumarpushpam17-personal/Hackathon/blob/main/api_contract_validator/BLOG.md" target="_blank" rel="noopener" class="linkedin-proof">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016.01 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.28 0 .32.21.7.83.58A12.01 12.01 0 0024 12.5C24 5.87 18.63.5 12 .5z"/></svg>
+                Writeup &#8599;
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="hackathon-card">
+          <div class="hackathon-name">AI Companion <span class="hackathon-year">Mar 2025</span></div>
+          <div class="hackathon-rank">&#129351; Rank 1 &middot; Winner</div>
+          <ul>
+            <li>Developed an intelligent assistant that listens to team conversations across Slack, Teams, and Gmail</li>
+            <li>Extracted actionable tasks automatically and allowed follow-up through a chatbot interface</li>
+            <li>Implemented AI/NLP-based task extraction and a conversational interface on top of it</li>
+          </ul>
+          <div class="hackathon-footer">
+            <div class="project-tags">
+              <span class="tag">NLP</span>
+              <span class="tag">LLMs</span>
+              <span class="tag">Chatbot</span>
+              <span class="tag">Integrations</span>
+            </div>
+            <div class="hackathon-links">
+              <a href="https://www.linkedin.com/feed/update/urn:li:activity:7308720340656930816/" target="_blank" rel="noopener" class="linkedin-proof">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                View on LinkedIn &#8599;
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="hackathon-card">
+          <div class="hackathon-name">Bug Battleground <span class="hackathon-year">Oct 2023</span></div>
+          <div class="hackathon-rank">&#129352; Rank 2</div>
+          <ul>
+            <li>Built a platform where developers submit their websites for community testing</li>
+            <li>Designed a competitive loop where users find, report, and validate real bugs</li>
+            <li>Implemented streaks, rankings, and rewards to gamify bug discovery</li>
+          </ul>
+          <div class="hackathon-footer">
+            <div class="project-tags">
+              <span class="tag">Django</span>
+              <span class="tag">Gamification</span>
+              <span class="tag">QA Tooling</span>
+            </div>
+            <div class="hackathon-links">
+              <a href="https://www.linkedin.com/posts/jobzdrive1_aihackathon-innovation-ai-ugcPost-7117045052106780672-iq5i" target="_blank" rel="noopener" class="linkedin-proof">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                View on LinkedIn &#8599;
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="hackathon-card">
+          <div class="hackathon-name">GitHub PR &amp; Reviews Tracker</div>
+          <div class="hackathon-rank">&#129352; Rank 2</div>
+          <ul>
+            <li>Built a tracker that monitors code reviews and pull requests company-wide</li>
+            <li>Surfaced visibility into collaboration workflows across every engineering team</li>
+            <li>Improved team coordination and tightened the review turnaround process</li>
+          </ul>
+          <div class="hackathon-footer">
+            <div class="project-tags">
+              <span class="tag">GitHub API</span>
+              <span class="tag">Analytics</span>
+              <span class="tag">Dev Tooling</span>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div class="hackathon-card reveal reveal-delay-2">
-        <div class="hackathon-name">Bug Battleground</div>
-        <div class="hackathon-rank">🥈 Rank 2</div>
-        <ul>
-          <li>Built a platform for developers to submit websites for testing</li>
-          <li>Users compete to find and report bugs</li>
-          <li>Implemented streaks, rankings, and rewards to gamify bug discovery</li>
-        </ul>
-        <a href="https://www.linkedin.com/posts/jobzdrive1_aihackathon-innovation-ai-ugcPost-7117045052106780672-iq5i" target="_blank" rel="noopener" class="linkedin-proof">
-          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          View on LinkedIn ↗
-        </a>
       </div>
-      <div class="hackathon-card reveal reveal-delay-3">
-        <div class="hackathon-name">GitHub PR & Reviews Tracker</div>
-        <div class="hackathon-rank">🥈 Rank 2</div>
-        <ul>
-          <li>Built a tracker to monitor code reviews and pull requests company-wide</li>
-          <li>Ensured visibility into collaboration workflows</li>
-          <li>Improved team coordination and development processes</li>
-        </ul>
+      <div class="carousel-controls">
+        <p class="carousel-hint">Auto-scrolling &middot; hover to pause &middot; arrows or swipe to step</p>
+        <div class="carousel-buttons">
+        <button class="carousel-nav prev" type="button" aria-label="Previous hackathons"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="carousel-nav next" type="button" aria-label="Next hackathons"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
       </div>
     </div>
   </div>
@@ -2244,6 +2461,97 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.08 });
 reveals.forEach(el => revealObserver.observe(el));
 
+// ——— Auto-scrolling carousels (projects + hackathons) ———
+// Position is a plain scrollLeft value, so auto-scroll, the prev/next buttons,
+// trackpad swipes and touch drags all drive the same thing.
+// Runs before the cursor/tilt handlers below so cloned cards get the same listeners.
+const CAROUSEL_SPEED = 45; // px per second — slow enough to read while it moves
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+document.querySelectorAll('.carousel').forEach(carousel => {
+  const track = carousel.querySelector('.carousel-track');
+  if (!track) return;
+
+  const shell = carousel.closest('.carousel-shell') || carousel;
+  const originals = Array.from(track.children);
+  if (!originals.length) return;
+
+  function addCopy() {
+    originals.forEach(card => {
+      const clone = card.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      clone.querySelectorAll('a, button').forEach(el => el.setAttribute('tabindex', '-1'));
+      track.appendChild(clone);
+    });
+  }
+
+  // One copy makes the loop seamless. Position stays within [0, loop), so the
+  // track only needs to cover loop + one viewport; add copies if it doesn't.
+  addCopy();
+  let loop = track.children[originals.length].offsetLeft - track.children[0].offsetLeft;
+  for (let i = 0; i < 4 && track.scrollWidth < carousel.clientWidth + loop + 200; i++) addCopy();
+
+  let pos = 0;        // where we think the carousel is
+  let target = null;  // set by the arrows, eased toward
+  let paused = false;
+  let written = -1;   // last value we wrote, to tell our scrolls from the user's
+
+  function apply() {
+    if (loop > 0) {
+      while (pos >= loop) { pos -= loop; if (target !== null) target -= loop; }
+      while (pos < 0)     { pos += loop; if (target !== null) target += loop; }
+    }
+    written = pos;
+    carousel.scrollLeft = pos;
+  }
+
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+
+    if (target !== null) {
+      pos += (target - pos) * Math.min(1, dt * 9);           // ease toward the arrow step
+      if (Math.abs(target - pos) < 0.5) { pos = target; target = null; }
+      apply();
+    } else if (!paused && !reduceMotion.matches) {
+      pos += CAROUSEL_SPEED * dt;
+      apply();
+    } else if (Math.abs(carousel.scrollLeft - written) > 1) {
+      pos = carousel.scrollLeft;                             // the visitor is scrolling it
+      apply();
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // Step exactly one card per click, from wherever the glide is currently headed.
+  function step(dir) {
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    const width = track.children[0].getBoundingClientRect().width + gap;
+    target = (target === null ? pos : target) + dir * width;
+  }
+
+  const prev = shell.querySelector('.carousel-nav.prev');
+  const next = shell.querySelector('.carousel-nav.next');
+  if (prev) prev.addEventListener('click', () => step(-1));
+  if (next) next.addEventListener('click', () => step(1));
+
+  // Pause while the visitor is reading, keyboard-focusing, or touching it.
+  const hold = () => { paused = true; };
+  const release = () => { paused = false; };
+  shell.addEventListener('mouseenter', hold);
+  shell.addEventListener('mouseleave', release);
+  shell.addEventListener('focusin', hold);
+  shell.addEventListener('focusout', release);
+  shell.addEventListener('pointerdown', hold);
+  ['pointerup', 'pointercancel'].forEach(evt => shell.addEventListener(evt, release));
+
+  window.addEventListener('resize', () => {
+    loop = track.children[originals.length].offsetLeft - track.children[0].offsetLeft;
+  });
+});
+
 // ——— Mobile nav ———
 document.getElementById('hamburgerBtn').addEventListener('click', () => {
   document.getElementById('navLinks').classList.toggle('active');
@@ -2272,19 +2580,6 @@ function toggleTheme() {
 
 themeToggle.addEventListener('click', toggleTheme);
 themeToggleMobile.addEventListener('click', toggleTheme);
-
-// ——— See More Projects Toggle ———
-function toggleHiddenProjects() {
-  const hidden = document.getElementById('hiddenProject');
-  const btn = document.getElementById('seeMoreBtn');
-  if (hidden.classList.contains('project-hidden')) {
-    hidden.classList.remove('project-hidden');
-    btn.textContent = 'See Less';
-  } else {
-    hidden.classList.add('project-hidden');
-    btn.textContent = 'See More';
-  }
-}
 
 // ——— Custom Cursor ———
 const dot = document.getElementById('cursorDot');
