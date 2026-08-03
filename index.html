@@ -1384,6 +1384,29 @@ footer p {
   outline-offset: 2px;
 }
 
+/* Wide screens have real margin outside the 1200px container, so the arrows can
+   flank the card row instead of sitting under it. The -16px keeps them centred
+   on the cards, since .carousel is padded 0.75rem top / 2rem bottom and the
+   controls row below is a fixed 1.5rem. Narrower screens keep the bottom row. */
+@media (min-width: 1280px) {
+  .carousel-controls { height: 1.5rem; }
+  .carousel-buttons { display: contents; }
+
+  .carousel-nav {
+    position: absolute;
+    top: calc(50% - 16px);
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+  }
+
+  .carousel-nav:hover { transform: translateY(-50%) scale(1.08); }
+  .carousel-nav:active { transform: translateY(-50%) scale(1); }
+
+  .carousel-nav.prev { left: -58px; }
+  .carousel-nav.next { right: -58px; }
+}
+
 /* uniform card footprint — every card same width, same height */
 .carousel .project-card,
 .carousel .hackathon-card {
@@ -1821,7 +1844,7 @@ footer p {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
           </div>
           <div class="project-links">
-            <a href="https://www.reward360.co/" target="_blank" rel="noopener">Visit ↗</a>
+            <a href="https://offers.reward360.in/v2/compare-stay?utm_source=header" target="_blank" rel="noopener">Visit ↗</a>
           </div>
         </div>
         <div class="project-name">Reward360</div>
