@@ -20,8 +20,18 @@ This portfolio showcases:
 
 - Pure **HTML + CSS + Vanilla JS** — no frameworks, no dependencies
 - Responsive design with dark/light theme toggle
-- Smooth scroll animations, typing effect, tech marquee
-- Fonts: Syne, DM Sans, JetBrains Mono (Google Fonts)
+- Smooth scroll animations, typing effect, tech marquee, auto-scrolling carousels
+- Respects `prefers-reduced-motion` — every animation opts out
+- Fonts: Space Grotesk, DM Sans, JetBrains Mono (Google Fonts)
+
+### Files
+
+| File | Purpose |
+|---|---|
+| `index.html` | The entire site — markup, styles, and scripts |
+| `photo.webp` | Hero portrait |
+| `og-image.png` | 1200×630 social preview card |
+| `sitemap.xml` | Sitemap for search engines |
 
 ---
 
